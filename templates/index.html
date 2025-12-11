@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 
-{% block title %}Wow{% endblock %}
+{% block title %}wow{% endblock %}
 
 {% block main %}
-    <h1>wow stuff</h1>
-    <div class="container py-5 text-center">even more stuff</div>
+    <h1>{{ content_title }}</h1>
+    <div class="container py-5 text-center">{{ content_body }}</div>
 {% endblock %}
