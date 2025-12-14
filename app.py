@@ -7,14 +7,35 @@ from flask import Flask, render_template, session, redirect, url_for, request
 app = Flask(__name__)
 app.secret_key = "Final Project!"
 
+# set language to default
+
+# this function expects a language keyword argument
+def lang_select(f):
+    def wrapper(*args, **kwargs):
+        print("start")
+        if "language" not in session:
+            session["language"] = "en-us"
+            with open(f"translations/en-us.json", "r", encoding="utf-8") as file:
+                page_data = json.load(file)
+        elif "language" not in kwargs:
+            with open("translations/en-us.json", "r", encoding="utf-8") as file:
+                page_data = json.load(file)
+        else:
+            session["language"] = kwargs["language"]
+            with open(f"translations/{session.get("language")}.json", "r", encoding="utf-8") as file:
+                page_data = json.load(file)
+        rv = f(page_data)
+        print("end")
+        return rv
+    return wrapper
+
 
 @app.route("/")
-def index():
-    english = "translations/en-us.json"
-    spanish = "translations/es.json"
-    with open(spanish, "r", encoding="utf-8") as file:
-        content_dict = json.loads(file.read())
-    return render_template("index.html", content_title=content_dict["index_main_title"], content_body=content_dict["index_main_body"])
+@app.route("/<language>/")
+@lang_select
+def index(render_data):
+    return render_template("index.html", content_title=render_data["index_title"], content_body=render_data["index_body"])
+
 
 if __name__ == "__main__":
     app.run(debug=True)
